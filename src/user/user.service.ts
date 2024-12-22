@@ -16,8 +16,9 @@ export class UserService {
     try {
       return this.userRepository.create(createUserDto);
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(
-        `Ошибка при создании пользователя ${error}`,
+        `Ошибка при создании пользователя`,
       );
     }
   }
@@ -42,8 +43,9 @@ export class UserService {
       }
       return user;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(
-        `Ошибка при получении данных пользователя ${error}`,
+        `Ошибка при получении данных пользователя`,
       );
     }
   }

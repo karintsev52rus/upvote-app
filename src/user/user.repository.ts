@@ -6,7 +6,6 @@ import { ICreateUser } from './interfaces/create-user.interface';
 @Injectable()
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
-
   async user(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {

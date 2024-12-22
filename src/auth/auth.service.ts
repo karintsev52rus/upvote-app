@@ -26,13 +26,13 @@ export class AuthService {
       if (!user || user.password !== password) {
         throw new UnauthorizedException('Неверный логин или пароль');
       }
-
       const payload = { userId: user.id, email: user.email };
       const token = await this.jwtService.signAsync(payload);
       return { token };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(
-        `Ошибка при авторизации пользователя ${error}`,
+        `Ошибка при авторизации пользователя`,
       );
     }
   }
@@ -53,8 +53,9 @@ export class AuthService {
         message: 'Новый пользователь создан',
       };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(
-        `Ошибка при регистрации нового пользователя ${error} `,
+        `Ошибка при регистрации нового пользователя`,
       );
     }
   }
