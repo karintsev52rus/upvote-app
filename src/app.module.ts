@@ -7,6 +7,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { StatusModule } from './status/status.module';
 import { CategoryModule } from './category/category.module';
+import { FeedbackPostModule } from './feedback-post/feedback-post.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CategoryModule } from './category/category.module';
     PrismaModule,
     StatusModule,
     CategoryModule,
+    FeedbackPostModule,
   ],
   providers: [
     {

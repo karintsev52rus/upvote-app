@@ -1,4 +1,11 @@
-import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiBearerAuth,
@@ -21,7 +28,7 @@ export class UserController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.OK, type: UserResponseDto })
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Req() req: Request, @Param('id') id: string) {
     return this.userService.getUserById(id);
   }
 }
