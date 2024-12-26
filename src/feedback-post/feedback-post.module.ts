@@ -9,5 +9,6 @@ import { PaginationService } from 'src/common/pagintation/pagination.service';
   imports: [PrismaModule],
   controllers: [FeedbackPostController],
   providers: [FeedbackPostService, FeedbackPostRepository, PaginationService],
+  exports: [FeedbackPostService],
 })
 export class FeedbackPostModule {}

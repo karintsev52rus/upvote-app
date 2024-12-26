@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  app:
+    container_name: upvotes_app
+    build:
+      context: .
+    env_file:
+      - .env
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    ports:
+      - '9000:9000'
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    container_name: postgres-db
+    image: postgres:17.2
+    env_file:
+      - .env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5434:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:

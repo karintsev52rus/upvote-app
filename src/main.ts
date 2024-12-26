@@ -12,7 +12,7 @@ async function bootstrap() {
     createSwagger(app);
 
     await app.listen(process.env.PORT ?? 3000);
-    const url = process.env.HOST;
+    const url = `${process.env.HOST}:${process.env.PORT}`;
 
     console.log(`Server started at ${url}`);
     console.log(`Swagger available on ${url}${SWAGGER_PATH}`);

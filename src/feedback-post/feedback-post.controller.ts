@@ -26,7 +26,7 @@ import {
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { FeedbackPostResponseMapper } from './mappers/feedback-post-response.mapper';
 import { FeedbackPostResponseDto } from './dto/feedback-post-response.dto';
-import { FeedbackPostListResponseDto } from './dto/feedback-post-list.dto';
+import { FeedbackPostListResponseDto } from './dto/feedback-post-list-response.dto';
 import { FindFeedbackPostsDto } from './dto/find-feedback-posts.dto';
 import { number, string } from 'zod';
 
@@ -76,7 +76,7 @@ export class FeedbackPostController {
   })
   @ApiQuery({
     name: 'orderBy',
-    description: 'сортировка по полю "createdAt" или "upvotes"',
+    description: 'сортировка по полю "createdAt" или "upvotesNumber"',
     required: false,
   })
   @ApiQuery({

@@ -7,7 +7,7 @@ export const FindFeedbackPostsSchema = PaginationRequestSchema.merge(
   z.object({
     order: z.string(z.enum(['asc', 'desc'])).default('desc'),
     orderBy: z
-      .string(z.enum([OrderByTypes.createdAt, OrderByTypes.upvotes]))
+      .string(z.enum([OrderByTypes.createdAt, OrderByTypes.upvotesNumber]))
       .default(OrderByTypes.createdAt),
     categories: z
       .union([z.array(z.string().uuid()), z.string().uuid()])

@@ -23,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const responseBody =
       exception instanceof HttpException
-        ? { message: exception.message }
+        ? { message: exception.getResponse() }
         : { message: 'Ошибка на сервере' };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FeedbackPostSchema } from '../feedback-post.schema';
+import { FeedbackPostSchema } from '../schemas/feedback-post.schema';
 import { createZodDto } from 'nestjs-zod';
 
 export const FeedbackPostResponseSchema = FeedbackPostSchema.merge(

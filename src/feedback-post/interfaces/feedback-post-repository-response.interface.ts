@@ -4,6 +4,7 @@ export interface IFeedbackPostRepositoryResponse {
   id: string;
   title: string;
   description: string;
+  upvotesNumber: number;
   author: User;
   status: Status;
   categories: IFeedbackCategoriesRepositoryResponse[];

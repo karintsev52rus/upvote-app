@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -25,17 +26,18 @@ model User {
 }
 
 model FeedbackPost {
-  id          String                    @id @unique @default(uuid())
-  title       String
-  description String
-  author      User                      @relation(fields: [authorId], references: [id])
-  authorId    String
-  categories  FeedbackPostsCategories[]
-  status      Status                    @relation(fields: [statusId], references: [id])
-  statusId    String
-  Upvote      Upvote[]
-  createdAt   DateTime                  @default(now())
-  updatedAt   DateTime                  @default(now())
+  id            String                    @id @unique @default(uuid())
+  title         String
+  description   String
+  author        User                      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId      String
+  categories    FeedbackPostsCategories[]
+  status        Status                    @relation(fields: [statusId], references: [id])
+  statusId      String
+  upvotes       Upvote[]
+  upvotesNumber Int                       @default(0)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @default(now())
 }
 
 model Category {
@@ -45,9 +47,9 @@ model Category {
 }
 
 model FeedbackPostsCategories {
-  feedbackPost   FeedbackPost @relation(fields: [feedbackPostId], references: [id])
+  feedbackPost   FeedbackPost @relation(fields: [feedbackPostId], references: [id], onDelete: Cascade)
   feedbackPostId String
-  Category       Category     @relation(fields: [categoryId], references: [id])
+  Category       Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId     String
 
   @@id([feedbackPostId, categoryId])
@@ -61,9 +63,9 @@ model Status {
 
 model Upvote {
   id           String       @unique @default(uuid())
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
-  feedbackPost FeedbackPost @relation(fields: [postId], references: [id])
+  feedbackPost FeedbackPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId       String
   createdAt    DateTime     @default(now())
 }

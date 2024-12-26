@@ -9,6 +9,7 @@ import { StatusModule } from './status/status.module';
 import { CategoryModule } from './category/category.module';
 import { FeedbackPostModule } from './feedback-post/feedback-post.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { UpvoteModule } from './upvote/upvote.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     StatusModule,
     CategoryModule,
     FeedbackPostModule,
+    UpvoteModule,
   ],
   providers: [
     {

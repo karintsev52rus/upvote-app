@@ -1,5 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
-import { FeedbackPostSchema } from '../feedback-post.schema';
+import { FeedbackPostSchema } from '../schemas/feedback-post.schema';
 
 export const CreateFeedbackPostSchema = FeedbackPostSchema.omit({
   id: true,
