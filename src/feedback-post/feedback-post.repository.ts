@@ -3,7 +3,8 @@ import { FeedbackPost, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeedbackPostDto } from './dto/create-feedback-post.dto';
 import { UpdateFeedbackPostDto } from './dto/update-feedback-post.dto';
-import { IFeedbackPostRepositoryResponse } from './interfaces/feedback-post-repository-response';
+import { IFeedbackPostRepositoryResponse } from './interfaces/feedback-post-repository-response.interface';
+import { IFindFeedbackPosts } from './interfaces/find-feedback-posts.interface';
 
 @Injectable()
 export class FeedbackPostRepository {
@@ -71,9 +72,46 @@ export class FeedbackPostRepository {
     });
   }
 
-  async findAll() {
+  async findAll(
+    findFeedbackPostData: IFindFeedbackPosts,
+  ): Promise<IFeedbackPostRepositoryResponse[]> {
+    const { skip, take, order, orderBy, categories, status } =
+      findFeedbackPostData;
+    const whereStatus = status ? { statusId: { equals: status } } : undefined;
+    const whereCategory =
+      categories && categories.length
+        ? { categories: { some: { categoryId: { in: categories } } } }
+        : undefined;
+    const where: Prisma.FeedbackPostWhereInput | undefined = {
+      ...whereStatus,
+      ...whereCategory,
+    };
     return this.prisma.feedbackPost.findMany({
-      include: { categories: true, status: true, author: true },
+      skip,
+      take,
+      orderBy: { [orderBy]: order },
+      where,
+      include: {
+        categories: { include: { Category: true } },
+        status: true,
+        author: true,
+      },
+    });
+  }
+
+  async getCount(findFeedbackPostData: IFindFeedbackPosts) {
+    const { categories, status } = findFeedbackPostData;
+    const whereStatus = status ? { statusId: { equals: status } } : undefined;
+    const whereCategory =
+      categories && categories.length
+        ? { categories: { some: { categoryId: { in: categories } } } }
+        : undefined;
+    const where: Prisma.FeedbackPostWhereInput | undefined = {
+      ...whereStatus,
+      ...whereCategory,
+    };
+    return this.prisma.feedbackPost.count({
+      where,
     });
   }
 
@@ -82,22 +120,30 @@ export class FeedbackPostRepository {
     updateFeedbackPostDto: UpdateFeedbackPostDto,
   ): Promise<IFeedbackPostRepositoryResponse> {
     const { author, categories, status } = updateFeedbackPostDto;
-    const categoryIds =
-      categories && categories.length
-        ? categories.map((categoryId) => {
-            return { categoryId };
-          })
-        : [];
+    const authorConnect = author ? { connect: { id: author } } : undefined;
+    const statusConnect = status ? { connect: { id: status } } : undefined;
+
+    let categoriesCreate:
+      | Prisma.FeedbackPostsCategoriesUpdateManyWithoutFeedbackPostNestedInput
+      | undefined;
+    if (categories) {
+      categoriesCreate = { deleteMany: {} };
+      if (categories.length) {
+        categoriesCreate.create = categories.map((categoryId) => {
+          return { categoryId };
+        });
+      }
+    } else {
+      categoriesCreate = undefined;
+    }
+
     return this.prisma.feedbackPost.update({
       where: { id },
       data: {
         ...updateFeedbackPostDto,
-        author: { connect: { id: author } },
-        status: { connect: { id: status } },
-        categories: {
-          deleteMany: {},
-          create: categoryIds,
-        },
+        author: authorConnect,
+        status: statusConnect,
+        categories: categoriesCreate,
       },
       include: {
         categories: { include: { Category: true } },

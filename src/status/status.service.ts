@@ -1,8 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateStatusDto } from './dto/create-status.dto';
 import { StatusRepository } from './status.repository';
 
@@ -10,31 +6,14 @@ import { StatusRepository } from './status.repository';
 export class StatusService {
   constructor(@Inject() private readonly statusRepo: StatusRepository) {}
   create(createStatusDto: CreateStatusDto) {
-    try {
-      return this.statusRepo.create(createStatusDto);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(`Ошибка при создании статуса`);
-    }
+    return this.statusRepo.create(createStatusDto);
   }
 
   findAll() {
-    try {
-      return this.statusRepo.findAll();
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(
-        `Ошибка при получении списка статусов`,
-      );
-    }
+    return this.statusRepo.findAll();
   }
 
   findOne(id: string) {
-    try {
-      return this.statusRepo.findById(id);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(`Ошибка при получении статуса`);
-    }
+    return this.statusRepo.findById(id);
   }
 }

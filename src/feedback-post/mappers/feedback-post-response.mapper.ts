@@ -1,4 +1,4 @@
-import { IFeedbackPostRepositoryResponse } from '../interfaces/feedback-post-repository-response';
+import { IFeedbackPostRepositoryResponse } from '../interfaces/feedback-post-repository-response.interface';
 
 export class FeedbackPostResponseMapper {
   id: string;

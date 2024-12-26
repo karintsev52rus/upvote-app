@@ -1,49 +1,74 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFeedbackPostDto } from './dto/create-feedback-post.dto';
 import { UpdateFeedbackPostDto } from './dto/update-feedback-post.dto';
 import { FeedbackPostRepository } from './feedback-post.repository';
+import { FindFeedbackPostsDto } from './dto/find-feedback-posts.dto';
+import { IFindFeedbackPosts } from './interfaces/find-feedback-posts.interface';
+import { IFeedbackPostRepositoryResponse } from './interfaces/feedback-post-repository-response.interface';
+import { PaginationResponseType } from 'src/common/pagintation/pagination.schema';
+import { PaginationService } from 'src/common/pagintation/pagination.service';
 
 @Injectable()
 export class FeedbackPostService {
   constructor(
     @Inject() private readonly feedbackPostRepo: FeedbackPostRepository,
+    private readonly paginationService: PaginationService,
   ) {}
-  async create(createFeedbackPostDto: CreateFeedbackPostDto) {
-    try {
-      return this.feedbackPostRepo.create(createFeedbackPostDto);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('Ошибка при создании отзыва');
+  async create(
+    createFeedbackPostDto: CreateFeedbackPostDto,
+  ): Promise<IFeedbackPostRepositoryResponse> {
+    return this.feedbackPostRepo.create(createFeedbackPostDto);
+  }
+
+  async findAll(dto: FindFeedbackPostsDto): Promise<{
+    data: IFeedbackPostRepositoryResponse[];
+    pagination: PaginationResponseType;
+  }> {
+    const { take, order, orderBy, skip, categories, status } = dto;
+
+    let categoryIds: string[] | undefined;
+    if (!Array.isArray(categories) && categories) {
+      categoryIds = [categories];
     }
-  }
-
-  async findAll() {
-    return this.feedbackPostRepo.findAll();
-  }
-
-  async findOne(id: string) {
-    try {
-      const feedbackPost = await this.feedbackPostRepo.findById(id);
-      if (!feedbackPost) {
-        throw new NotFoundException('Отзыв не найден');
-      }
-      return feedbackPost;
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('Ошибка при получении отзыва');
+    if (!categories) {
+      categoryIds = undefined;
     }
+    const findFeedbackPostData: IFindFeedbackPosts = {
+      order,
+      orderBy,
+      categories: categoryIds,
+      skip,
+      take,
+      status,
+    };
+    const feedbackPosts =
+      await this.feedbackPostRepo.findAll(findFeedbackPostData);
+    const count = await this.feedbackPostRepo.getCount(findFeedbackPostData);
+
+    const paginationResponse = this.paginationService.getPaginationResponse({
+      count,
+      skip,
+      take,
+    });
+    return { pagination: paginationResponse, data: feedbackPosts };
   }
 
-  async update(id: string, updateFeedbackPostDto: UpdateFeedbackPostDto) {
+  async findOne(id: string): Promise<IFeedbackPostRepositoryResponse> {
+    const feedbackPost = await this.feedbackPostRepo.findById(id);
+    if (!feedbackPost) {
+      throw new NotFoundException('предложение не найдено');
+    }
+    return feedbackPost;
+  }
+
+  async update(
+    id: string,
+    updateFeedbackPostDto: UpdateFeedbackPostDto,
+  ): Promise<IFeedbackPostRepositoryResponse> {
     return this.feedbackPostRepo.updateById(id, updateFeedbackPostDto);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} feedbackPost`;
+  async remove(id: string) {
+    return this.feedbackPostRepo.delete(id);
   }
 }

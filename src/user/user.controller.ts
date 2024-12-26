@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiBearerAuth,
@@ -16,6 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { UserResponseMapper } from './mappers/user-response.mapper';
 
 @Controller('users')
 @ApiTags('пользователи')
@@ -28,7 +22,7 @@ export class UserController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.OK, type: UserResponseDto })
   @Get(':id')
-  findOne(@Req() req: Request, @Param('id') id: string) {
-    return this.userService.getUserById(id);
+  async findOne(@Param('id') id: string) {
+    return new UserResponseMapper(await this.userService.getUserById(id));
   }
 }

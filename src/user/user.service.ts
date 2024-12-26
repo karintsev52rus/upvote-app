@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { User } from '@prisma/client';
 import { ICreateUser } from './interfaces/create-user.interface';
@@ -13,14 +8,7 @@ export class UserService {
   constructor(@Inject() private readonly userRepository: UserRepository) {}
 
   async createUser(createUserDto: ICreateUser): Promise<User> {
-    try {
-      return this.userRepository.create(createUserDto);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(
-        `Ошибка при создании пользователя`,
-      );
-    }
+    return this.userRepository.create(createUserDto);
   }
 
   async isUserAlreadyExists(email: string): Promise<boolean> {
@@ -35,18 +23,11 @@ export class UserService {
     return this.userRepository.findUserByEmail(email);
   }
 
-  async getUserById(id: string): Promise<User | null> {
-    try {
-      const user = await this.userRepository.findById(id);
-      if (!user) {
-        throw new NotFoundException(`Пользователь не найден`);
-      }
-      return user;
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(
-        `Ошибка при получении данных пользователя`,
-      );
+  async getUserById(id: string): Promise<User> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundException(`Пользователь не найден`);
     }
+    return user;
   }
 }
