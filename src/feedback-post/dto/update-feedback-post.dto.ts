@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { CreateFeedbackPostSchema } from './create-feedback-post.dto';
 
 export const UpdateFeedbackPostSchema = CreateFeedbackPostSchema.omit({
-  upvotesNumber: true,
   author: true,
 })
   .merge(

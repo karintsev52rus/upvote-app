@@ -11,7 +11,7 @@ export class UserResponseMapper {
     this.avatar = avatar;
     this.email = email;
     this.id = id;
-    this.createdAt = createdAt.toLocaleDateString();
-    this.updatedAt = updatedAt.toLocaleDateString();
+    this.createdAt = createdAt.toLocaleString();
+    this.updatedAt = updatedAt.toLocaleString();
   }
 }

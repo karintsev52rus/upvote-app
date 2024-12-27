@@ -39,7 +39,7 @@ export class FeedbackPostResponseMapper {
             return { id: Category.id, name: Category.name };
           })
         : [];
-    this.createdAt = createdAt.toLocaleDateString();
-    this.updatedAt = updatedAt.toLocaleDateString();
+    this.createdAt = createdAt.toLocaleString();
+    this.updatedAt = updatedAt.toLocaleString();
   }
 }

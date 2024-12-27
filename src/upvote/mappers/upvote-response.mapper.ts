@@ -11,7 +11,7 @@ export class UpvoteResponseMapper {
     this.id = id;
     this.postId = postId;
     this.userId = userId;
-    this.createdAt = createdAt.toLocaleDateString();
+    this.createdAt = createdAt.toLocaleString();
     this.upvotesNumber = feedbackPost.upvotesNumber;
   }
 }
