@@ -119,8 +119,7 @@ export class FeedbackPostRepository {
     id: string,
     updateFeedbackPostDto: UpdateFeedbackPostDto,
   ): Promise<IFeedbackPostRepositoryResponse> {
-    const { author, categories, status } = updateFeedbackPostDto;
-    const authorConnect = author ? { connect: { id: author } } : undefined;
+    const { categories, status } = updateFeedbackPostDto;
     const statusConnect = status ? { connect: { id: status } } : undefined;
 
     let categoriesCreate:
@@ -141,9 +140,9 @@ export class FeedbackPostRepository {
       where: { id },
       data: {
         ...updateFeedbackPostDto,
-        author: authorConnect,
         status: statusConnect,
         categories: categoriesCreate,
+        updatedAt: new Date(),
       },
       include: {
         categories: { include: { Category: true } },

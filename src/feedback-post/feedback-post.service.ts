@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateFeedbackPostDto } from './dto/create-feedback-post.dto';
 import { UpdateFeedbackPostDto } from './dto/update-feedback-post.dto';
 import { FeedbackPostRepository } from './feedback-post.repository';
@@ -64,11 +69,30 @@ export class FeedbackPostService {
   async update(
     id: string,
     updateFeedbackPostDto: UpdateFeedbackPostDto,
+    userId: string,
   ): Promise<IFeedbackPostRepositoryResponse> {
+    const post = await this.feedbackPostRepo.findById(id);
+    if (!post) {
+      throw new NotFoundException('предложение не найдено');
+    }
+    if (userId !== post.author.id) {
+      throw new ForbiddenException(
+        'пользователь может редактировать только свои предложения',
+      );
+    }
     return this.feedbackPostRepo.updateById(id, updateFeedbackPostDto);
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
+    const post = await this.feedbackPostRepo.findById(id);
+    if (!post) {
+      throw new NotFoundException('предложение не найдено');
+    }
+    if (userId !== post.author.id) {
+      throw new ForbiddenException(
+        'пользователь может удалять только свои предложения',
+      );
+    }
     return this.feedbackPostRepo.delete(id);
   }
 }

@@ -11,17 +11,28 @@ import {
   RegistrationResponseDto,
 } from './dto/registration.dto';
 import { JwtService } from '@nestjs/jwt';
+import { HashService } from 'src/common/helpers/hash-service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject() private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly hashService: HashService,
   ) {}
   async login(dto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = dto;
     const user = await this.userService.getUserByEmail(email);
-    if (!user || user.password !== password) {
+
+    if (!user) {
+      throw new UnauthorizedException('Неверный логин или пароль');
+    }
+
+    const isPasswordValid = await this.hashService.validatePassword(
+      password,
+      user.password,
+    );
+    if (!isPasswordValid) {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
     const payload = { userId: user.id, email: user.email };
@@ -30,7 +41,7 @@ export class AuthService {
   }
 
   async registration(dto: RegistrationDto): Promise<RegistrationResponseDto> {
-    const { email } = dto;
+    const { email, password } = dto;
     const isUserAlreadyExists =
       await this.userService.isUserAlreadyExists(email);
     if (isUserAlreadyExists) {
@@ -38,7 +49,11 @@ export class AuthService {
         'Пользователь с таким email уже зарегистрирован',
       );
     }
-    const user = await this.userService.createUser(dto);
+    const hashPassword = await this.hashService.hashPassword(password);
+    const user = await this.userService.createUser({
+      ...dto,
+      password: hashPassword,
+    });
     return {
       data: { userId: user.id },
       message: 'Новый пользователь создан',

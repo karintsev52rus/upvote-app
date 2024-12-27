@@ -121,11 +121,13 @@ export class FeedbackPostController {
   @ApiResponse({ status: HttpStatus.OK, type: FeedbackPostResponseDto })
   @Patch(':id')
   async update(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updateFeedbackPostDto: UpdateFeedbackPostDto,
   ): Promise<FeedbackPostResponseDto> {
+    const userId: string = req['user']['userId'];
     return new FeedbackPostResponseMapper(
-      await this.feedbackPostService.update(id, updateFeedbackPostDto),
+      await this.feedbackPostService.update(id, updateFeedbackPostDto, userId),
     );
   }
 
@@ -133,7 +135,8 @@ export class FeedbackPostController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.OK })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.feedbackPostService.remove(id);
+  async remove(@Req() req: Request, @Param('id') id: string) {
+    const userId: string = req['user']['userId'];
+    return this.feedbackPostService.remove(id, userId);
   }
 }
